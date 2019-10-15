@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <iostream>
 
 using namespace std;
 
@@ -18,7 +19,6 @@ int opcode2(int arr[],int s,int e){
 	dec2 = (arr[end]*4) + (arr[end +1]*2) + (arr[end +2]);
 	return dec2;
 }
-
 
 /*
  * bin is an array of 0 or 1
@@ -54,6 +54,26 @@ string binToHex(int bin[], int s, int e){
 	return result;
 }
 
+void FBfcccond(int arr[]){
+	int cond;
+	string FBfc[] = {"FBN", "FBNE", "FBLG", "FBUL", "FBL", "FBUG", "FBG", "FBU", "FBA", "FBE", "FBUG", "FBGE", "FBGUE", "FBLE", "FBULE", "FBO"};
+	//string 
+	cond = (arr[3] * 8) + (arr[4]*4) + (arr[5]*2) + (arr[6]);
+	cout << binToHex(arr,0,8) << " " << binToHex(arr,8,16) << " " << binToHex(arr,16,24) << " " << binToHex(arr,24,32) << "\t" ;
+	cout << FBfc[cond] << " " << "Address_to_jump " << "address+offset" << "\n";
+}
+
+void Bicccond(int arr[]){
+	int cond;
+	string Bicc[] = {"BN", "BE", "BLE", "BL", "BLEU", "BCS", "BNEG", "BVS", "BA", "BNE", "BG", "BGE", "BGU", "BCC", "BPOS", "BVC"};
+	//string
+	cond = (arr[3] * 8) + (arr[4]*4) + (arr[5]*2) + (arr[6]);
+	printf(">>>>>-----------------------------------------------<<<<<\n");
+	cout << "\t" <<binToHex(arr,0,8) << " " << binToHex(arr,8,16) << " " << binToHex(arr,16,24) << " " << binToHex(arr,24,32) << "\t" ;
+	cout << Bicc[cond] << " " << "Address_to_jump " << "address+offset" << "\n";
+	printf(">>>>>-----------------------------------------------<<<<<\n");
+}
+
 /*int disp30(int arr[]){
 
 }*/
@@ -61,9 +81,11 @@ string binToHex(int bin[], int s, int e){
 
 int main(){
 	int temp;
-	string value;
+	string value,instruction;
 	string reg;
-	int arr[32]= {0,0,0,0,1,0,1,1,0,0,1,1,0,1,1,1,1,0,1,1,0,0,1,0,1,0,1,0,0,1,1,1};
+	int arr[32]= {0,0,0,1,0,0,1,0,1,0,1,1,0,1,1,1,1,0,1,1,0,0,1,0,1,0,1,0,0,1,1,1};
+	instruction = binToHex(arr,0,32);
+	
 	switch(opcode(arr)){
 		case 0:
 			printf("we are entering opcode0, i.e branching or SETHI\n\n");
@@ -78,6 +100,7 @@ int main(){
 
 				case 2:
 					printf("We are doing conditional branching with Bicc\n");
+					Bicccond(arr);
 					break;
 
 				case 3:
@@ -93,9 +116,10 @@ int main(){
 					value = binToHex(arr,0,22);
 					printf("We are in SETHI right now \n");
 					printf("decoded instruction is -> \n");
-					printf("\t>>>>>----------------------------<<<<<\n");
-					printf("\t\tsethi %chi(%s),%s%d\n",'%',value.c_str(),reg.c_str(),(temp%8));
-					printf("\t>>>>>----------------------------<<<<<\n");
+					printf(">>>>>-----------------------------------------------<<<<<\n");
+					cout << binToHex(arr,0,8) << " " << binToHex(arr,8,16) << " " << binToHex(arr,16,24) << " " << binToHex(arr,24,32) << "\t" ;
+					printf("sethi %chi(%s), %s%d\n",'%',value.c_str(),reg.c_str(),(temp%8));
+					printf(">>>>>---------------------------------------------<<<<<\n");
 					break;
 
 				case 5:
@@ -104,22 +128,25 @@ int main(){
 
 				case 6:
 					printf("We are in FBfcc\n");
+					FBfcccond(arr);
 					break;
 
 				case 7:
 					printf("We are in CBccc\n");
+					
 					break;
 
 			}
 			break;
 
 		case 1:
-			printf("we are entering opcode1");
+			printf("we are entering opcode1\n");
 			/*//This deals with call function
 			r[15] + PC;
 			Pc+ nPc;
 			nPc+ Pc + disp30[arr];
 			*/
+			printf("call address_in_program(hexadecimal) <Name_of_function>");
 			printf("DECODED INSTRUCTION is ->\n");
 			printf("call ");
 
