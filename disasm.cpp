@@ -58,7 +58,25 @@ string binToHex(int bin[], int s, int e){
 
 void FBfcccond(int arr[]){
 	int cond;
-	string FBfc[] = {"FBN", "FBNE", "FBLG", "FBUL", "FBL", "FBUG", "FBG", "FBU", "FBA", "FBE", "FBUG", "FBGE", "FBGUE", "FBLE", "FBULE", "FBO"};
+	string FBfc[] = {
+        "FBN", 
+        "FBNE", 
+        "FBLG", 
+        "FBUL", 
+        "FBL", 
+        "FBUG", 
+        "FBG", 
+        "FBU", 
+        "FBA", 
+        "FBE", 
+        "FBUG", 
+        "FBGE", 
+        "FBGUE", 
+        "FBLE", 
+        "FBULE", 
+        "FBO"
+    };
+
 	//string 
 	cond = (arr[3] * 8) + (arr[4]*4) + (arr[5]*2) + (arr[6]);
 	cout << binToHex(arr,0,8) << " " << binToHex(arr,8,16) << " " << binToHex(arr,16,24) << " " << binToHex(arr,24,32) << "\t" ;
@@ -67,8 +85,26 @@ void FBfcccond(int arr[]){
 
 void Bicccond(int arr[]){
 	int cond;
-	string Bicc[] = {"BN", "BE", "BLE", "BL", "BLEU", "BCS", "BNEG", "BVS", "BA", "BNE", "BG", "BGE", "BGU", "BCC", "BPOS", "BVC"};
-	//string
+	string Bicc[] = {
+        "BN", 
+        "BE", 
+        "BLE", 
+        "BL", 
+        "BLEU", 
+        "BCS", 
+        "BNEG", 
+        "BVS", 
+        "BA", 
+        "BNE", 
+        "BG", 
+        "BGE", 
+        "BGU", 
+        "BCC", 
+        "BPOS", 
+        "BVC"
+    };
+	
+    //string
 	cond = (arr[3] * 8) + (arr[4]*4) + (arr[5]*2) + (arr[6]);
 	printf(">>>>>-----------------------------------------------<<<<<\n");
 	cout << "\t" <<binToHex(arr,0,8) << " " << binToHex(arr,8,16) << " " << binToHex(arr,16,24) << " " << binToHex(arr,24,32) << "\t" ;
