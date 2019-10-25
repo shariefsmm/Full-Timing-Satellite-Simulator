@@ -3,6 +3,8 @@
 #include <string>
 #include <iostream>
 
+#define NUM_INSTRUCTIONS 3
+
 using namespace std;
 
 int opcode(int arr[] ){
@@ -78,14 +80,74 @@ void Bicccond(int arr[]){
 
 }*/
 
+typedef struct Inst {
+    unsigned short op;
+    union {
+        unsigned short rd;
+        struct {
+            unsigned short a;
+            unsigned short cond;
+        };
+    } dest;
 
-int main(){
-	int temp;
-	string value,instruction;
-	string reg;
-	int arr[32]= {0,0,0,1,0,0,1,0,1,0,1,1,0,1,1,1,1,0,1,1,0,0,1,0,1,0,1,0,0,1,1,1};
-	instruction = binToHex(arr,0,32);
-	
+    unsigned short op2;
+    unsigned short op3;
+    unsigned short rs1;
+    unsigned short i;
+    unsigned short opf;
+    unsigned short asi;
+    unsigned short rs2;
+    unsigned short simm13;
+    unsigned short imm22;
+    unsigned short disp22;
+    unsigned short disp30;
+} Inst;
+
+void disassemble(Inst x_inst) {
+
+    string out;
+
+}
+
+
+void decode(unsigned x_inst) {
+
+    Inst inst;
+    inst.op = x_inst >> 30;
+
+    switch(inst.op) {
+        case 0x0: 
+            break;
+        case 0x1:
+            inst.disp30 = x_inst & 0x3FFFFFFF;
+            break;
+        case 0x2:
+            break;
+        
+        case 0x3:
+            break;
+        default:
+            cerr << "OPCODE length changed (not 2-bits anymore)?" << endl;
+            exit(1);
+    }
+
+    disassemble(inst);
+}
+
+
+int main() {
+
+    unsigned instructions[] = {0x12b7b2a7, 0xf2b7b2a7, 0x42b7b2a7};
+
+    for(int i = 0; i < NUM_INSTRUCTIONS; i++) {
+        decode(instructions[i]);
+    }
+
+    return 0;
+}
+
+
+#if 0
 	switch(opcode(arr)){
 		case 0:
 			printf("we are entering opcode0, i.e branching or SETHI\n\n");
@@ -159,3 +221,5 @@ int main(){
 
 	}
 }
+
+#endif
