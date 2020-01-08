@@ -7,7 +7,7 @@
 
 using namespace std;
 
-int opcode(int arr[] ){
+/*int opcode(int arr[] ){
 	int dec;
 	dec = (arr[0]*2) + (arr[1]);
 	return dec;
@@ -26,7 +26,7 @@ int opcode2(int arr[],int s,int e){
  * bin is an array of 0 or 1
  * s is starting bit (inclusive)
  * e is ending bit (exclusive)
- * */
+ * *//*
 string binToHex(int bin[], int s, int e){
 	string hex[] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"};
 	int len = e - s;
@@ -54,7 +54,7 @@ string binToHex(int bin[], int s, int e){
 			end -= 4;
 	}
 	return result;
-}
+}*/
 
 void FBfcccond(int arr[]){
 	int cond;
@@ -77,10 +77,11 @@ void FBfcccond(int arr[]){
         "FBO"
     };
 
-	//string 
+/*	//string 
 	cond = (arr[3] * 8) + (arr[4]*4) + (arr[5]*2) + (arr[6]);
 	cout << binToHex(arr,0,8) << " " << binToHex(arr,8,16) << " " << binToHex(arr,16,24) << " " << binToHex(arr,24,32) << "\t" ;
-	cout << FBfc[cond] << " " << "Address_to_jump " << "address+offset" << "\n";
+	cout << FBfc[cond] << " " << "Address_to_jump " << "address+offset" << "\n";*/
+	
 }
 
 void Bicccond(int arr[]){
@@ -103,7 +104,7 @@ void Bicccond(int arr[]){
         "BPOS", 
         "BVC"
     };
-	
+	/*
     //string
 	cond = (arr[3] * 8) + (arr[4]*4) + (arr[5]*2) + (arr[6]);
 	printf(">>>>>-----------------------------------------------<<<<<\n");
@@ -111,11 +112,77 @@ void Bicccond(int arr[]){
 	cout << Bicc[cond] << " " << "Address_to_jump " << "address+offset" << "\n";
 	printf(">>>>>-----------------------------------------------<<<<<\n");
 }
-
+*/
 /*int disp30(int arr[]){
 
 }*/
 
+
+
+/*
+typedef struct{
+	int32_t opcode3;
+	uint32_t rd;
+	uint32_t rs1;
+	union
+	{
+		struct
+		{
+			int i;
+			union
+			{
+				uint32_t rs2;
+				int32_t simm13;
+			} rs2;
+
+		} intg;
+
+		struct
+		{
+			uint32_t rs2;
+			uint32_t opf;
+		} fp;
+
+	} operand2;
+	} Arithmetic;
+
+	typedef struct{
+		uint32_t opcode2;
+
+		union
+		{
+			struct
+			{
+				uint32_t rd;
+				int32_t imm22;
+			} sethi;
+
+			struct
+			{
+			int32_t a;
+			int32_t cond;
+			int32_t disp22;
+			} branch;
+
+		} target;
+	} Branch;
+
+	typedef struct {
+		uint32_t opcode1;
+		union
+		{
+		Arithmetic a;
+		Branch b;
+		Call c;
+		} inst_type;
+	} decoded_instr;
+
+
+*/
+
+
+/**/
+/*
 typedef struct Inst {
     unsigned short op;
     union {
@@ -138,21 +205,118 @@ typedef struct Inst {
     unsigned short disp22;
     unsigned short disp30;
 } Inst;
+*/
 
-void disassemble(Inst x_inst) {
+typedef struct{
+        int32_t disp30;
+    } format1;
 
-    string out;
+typedef struct{
+        uint32_t op2;
+
+        union 
+        {
+            struct
+            {
+                uint32_t rd;
+                int32_t imm22;
+            } sethi;
+
+            struct 
+            {
+                int32_t a;
+                int32_t cond;
+                int32_t disp22;  
+            } branch; 
+        
+        } target;
+    } format2;
+
+typedef struct{
+        int32_t op3; 
+        uint32_t rd;
+        uint32_t rs1;
+
+        union 
+        {
+            struct 
+            {
+                int i;
+                union 
+                {
+                        uint32_t rs2;
+                        int32_t simm13;
+                } rs2;
+                
+            } intg;
+
+            struct 
+            {
+                uint32_t rs2;
+                uint32_t opf;
+            } fp;
+
+        } operand2;
+    } format3; //FMT1 or FMT2 or FMT3
+
+typedef struct {
+        uint32_t op;
+        union 
+        {
+            format1 a;
+            format2 b;
+            format3 c; 
+        } inst_type;
+    } inst;
+
+
+
+
+
+void disassemble(inst x_inst) {
+	uint32_t r;
+	switch(x_inst.op){
+		case 1:
+			
+			//printf("we are in opcode1\n");
+			r = x_inst.inst_type.a.disp30 << 2;
+			printf("PC + %08jx ", (uintmax_t)r);
+			break;
+
+
+		case 0:
+			//printf("we are in opcode0\n");
+
+			break;
+
+		case 2:
+		case 3:
+			printf("we are in opcode 2 or 3\n");
+			break;
+
+
+        default:
+            cerr << "OPCODE length changed (not 2-bits anymore)?" << endl;
+            exit(1);		
+
+	}
+
+
+
+    //string out;
 
 }
 
-
-void decode(unsigned x_inst) {
+/*
+void decode(uint32_t x_inst) {
 
     Inst inst;
     inst.op = x_inst >> 30;
 
     switch(inst.op) {
         case 0x0: 
+        	inst.inst_type.b.op2 = x_inst << 7;
+        	inst.inst_type.b.op2 = inst.inst_type.b.op2 >> 29;
             break;
         case 0x1:
             inst.disp30 = x_inst & 0x3FFFFFFF;
@@ -168,14 +332,83 @@ void decode(unsigned x_inst) {
     }
 
     disassemble(inst);
+}*/
+
+void decode(uint32_t instr){
+	uint32_t instr_copy = instr;
+
+    inst d;
+
+    uint32_t op = instr_copy >> 30;
+    d.op = op;
+
+    switch (op)
+    {
+        case 1:
+            d.inst_type.a.disp30 = (((1 << 22) - 1) & (instr_copy >> (0)));
+            break;
+
+        case 0:
+            d.inst_type.b.op2 = (((1 << 3) - 1) & (instr_copy >> (22)));
+
+            if(d.inst_type.b.op2 == 4)
+            {   
+                d.inst_type.b.target.sethi.rd = (((1 << 5) - 1) & (instr_copy >> (25)));
+                d.inst_type.b.target.sethi.imm22 = (((1 << 22) - 1) & (instr_copy >> (0)));
+            }
+
+            else
+            {   
+                d.inst_type.b.target.branch.a = (((1) & (instr_copy >> (29))));
+                d.inst_type.b.target.branch.cond = (((1 << 4) - 1) & (instr_copy >> (25)));
+                d.inst_type.b.target.branch.disp22 = (((1 << 22) - 1) & (instr_copy >> (0)));
+            }
+
+            break;
+        
+        case 2:
+        case 3:
+            d.inst_type.c.op3 = (((1 << 6) - 1) & (instr_copy >> (19)));
+            d.inst_type.c.rd = (((1 << 5) - 1) & (instr_copy >> (25)));
+            d.inst_type.c.rs1 = (((1 << 5) - 1) & (instr_copy >> (14)));
+
+            if(d.inst_type.c.op3 >= 0x00000034 && d.inst_type.c.op3 <= 0x00000037)
+            {
+                d.inst_type.c.operand2.fp.rs2 = (((1 << 5) - 1) & (instr_copy >> (0)));
+                d.inst_type.c.operand2.fp.opf = (((1 << 9) - 1) & (instr_copy >> (5)));
+            }
+
+            else
+            {
+                d.inst_type.c.operand2.intg.i = ((1) & (instr_copy >> (13)));
+                if( d.inst_type.c.operand2.intg.i)
+                {
+                    d.inst_type.c.operand2.intg.rs2.simm13 = (((1 << 13) - 1) & (instr_copy >> (0)));
+                }
+                else
+                {
+                    d.inst_type.c.operand2.intg.rs2.rs2 = (((1 << 5) - 1) & (instr_copy >> (0)));
+                }
+            }
+            break;
+
+        default:
+        	cerr << "OPCODE length changed (not 2-bits anymore)?" << endl;
+            break;
+    }
+
+
+    disassemble(d);
 }
+
 
 
 int main() {
 
-    unsigned instructions[] = {0x12b7b2a7, 0xf2b7b2a7, 0x42b7b2a7};
+    uint32_t instructions[] = {0x40025642};
 
     for(int i = 0; i < NUM_INSTRUCTIONS; i++) {
+    	printf("%08jx ", (uintmax_t)instructions[i]);
         decode(instructions[i]);
     }
 
@@ -256,6 +489,5 @@ int main() {
 
 
 	}
-}
 
 #endif
