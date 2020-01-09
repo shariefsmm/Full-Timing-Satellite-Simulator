@@ -55,7 +55,7 @@ string binToHex(int bin[], int s, int e){
 	}
 	return result;
 }*/
-
+/*
 void FBfcccond(int arr[]){
 	int cond;
 	string FBfc[] = {
@@ -80,39 +80,11 @@ void FBfcccond(int arr[]){
 /*	//string 
 	cond = (arr[3] * 8) + (arr[4]*4) + (arr[5]*2) + (arr[6]);
 	cout << binToHex(arr,0,8) << " " << binToHex(arr,8,16) << " " << binToHex(arr,16,24) << " " << binToHex(arr,24,32) << "\t" ;
-	cout << FBfc[cond] << " " << "Address_to_jump " << "address+offset" << "\n";*/
-	
-}
+	cout << FBfc[cond] << " " << "Address_to_jump " << "address+offset" << "\n";
+/
+}*/
 
-void Bicccond(int arr[]){
-	int cond;
-	string Bicc[] = {
-        "BN", 
-        "BE", 
-        "BLE", 
-        "BL", 
-        "BLEU", 
-        "BCS", 
-        "BNEG", 
-        "BVS", 
-        "BA", 
-        "BNE", 
-        "BG", 
-        "BGE", 
-        "BGU", 
-        "BCC", 
-        "BPOS", 
-        "BVC"
-    };
-	/*
-    //string
-	cond = (arr[3] * 8) + (arr[4]*4) + (arr[5]*2) + (arr[6]);
-	printf(">>>>>-----------------------------------------------<<<<<\n");
-	cout << "\t" <<binToHex(arr,0,8) << " " << binToHex(arr,8,16) << " " << binToHex(arr,16,24) << " " << binToHex(arr,24,32) << "\t" ;
-	cout << Bicc[cond] << " " << "Address_to_jump " << "address+offset" << "\n";
-	printf(">>>>>-----------------------------------------------<<<<<\n");
-}
-*/
+
 /*int disp30(int arr[]){
 
 }*/
@@ -271,21 +243,93 @@ typedef struct {
 
 
 
+void Bicccond(inst x_inst){
+	//int cond;
+	uint32_t cond;
+	uint32_t temp;
+	uint32_t temp2;
+	string Bicc[] = {
+        "BN", 
+        "BE", 
+        "BLE", 
+        "BL", 
+        "BLEU", 
+        "BCS", 
+        "BNEG", 
+        "BVS", 
+        "BA", 
+        "BNE", 
+        "BG", 
+        "BGE", 
+        "BGU", 
+        "BCC", 
+        "BPOS", 
+        "BVC"
+    };
+	
+    //string
+	/*cond = (arr[3] * 8) + (arr[4]*4) + (arr[5]*2) + (arr[6]);
+	printf(">>>>>-----------------------------------------------<<<<<\n");
+	cout << "\t" <<binToHex(arr,0,8) << " " << binToHex(arr,8,16) << " " << binToHex(arr,16,24) << " " << binToHex(arr,24,32) << "\t" ;
+	cout << Bicc[cond] << " " << "Address_to_jump " << "address+offset" << "\n";
+	printf(">>>>>-----------------------------------------------<<<<<\n");*/
+
+	cond = x_inst.inst_type.b.target.branch.cond;
+	temp  = x_inst.inst_type.b.target.branch.a << 2;
+	temp2 = x_inst.inst_type.b.target.branch.disp22 << 2;
+	printf(" %s \"PC + %08jx\" \n",Bicc[cond].c_str(), (uintmax_t)temp2);  
+}
+
+
 
 
 void disassemble(inst x_inst) {
-	uint32_t r;
+	uint32_t r;		// random which will be used to store some imp values
+	uint32_t eop;	//extra opcode like op2 and op3
+	uint32_t temp;
+	uint32_t temp2;
+	string reg;
 	switch(x_inst.op){
 		case 1:
 			
 			//printf("we are in opcode1\n");
 			r = x_inst.inst_type.a.disp30 << 2;
-			printf("PC + %08jx ", (uintmax_t)r);
+			printf("call \"PC + %08jx\" \n", (uintmax_t)r);
 			break;
 
 
 		case 0:
 			//printf("we are in opcode0\n");
+			eop = x_inst.inst_type.b.op2;
+			if (eop ==0 || eop == 1 || eop == 3 || eop == 5)
+			{
+				printf("ERROR!!! Unidentified Argument while reading OPCODE2");
+			}
+			else if(eop == 2){
+				//printf("We have to write for Bicc\n");
+				r = x_inst.inst_type.b.target.branch.disp22 << 2;
+				temp2 = x_inst.inst_type.b.target.branch.cond;
+				temp  = x_inst.inst_type.b.target.branch.a << 2;
+			}
+
+			else if (eop == 4)
+			{
+				r = x_inst.inst_type.b.target.sethi.imm22 << 2;
+				temp = x_inst.inst_type.b.target.sethi.rd;
+				if(temp < 8) reg = "%g";
+				else if(temp <16) reg= "%o";
+				else if(temp <24) reg= "%l";
+				else if(temp <32) reg= "%i";
+				printf("sethi %chi(%08jx), %s%d \n",'%',(uintmax_t)r,reg.c_str(),(temp%8));
+			}
+
+			else if(eop == 6){
+
+			}
+
+			else if(eop == 7){
+
+			}
 
 			break;
 
@@ -296,13 +340,10 @@ void disassemble(inst x_inst) {
 
 
         default:
-            cerr << "OPCODE length changed (not 2-bits anymore)?" << endl;
+            //cerr << "OPCODE length changed (not 2-bits anymore)?" << endl;
             exit(1);		
 
 	}
-
-
-
     //string out;
 
 }
@@ -360,7 +401,9 @@ void decode(uint32_t instr){
             else
             {   
                 d.inst_type.b.target.branch.a = (((1) & (instr_copy >> (29))));
-                d.inst_type.b.target.branch.cond = (((1 << 4) - 1) & (instr_copy >> (25)));
+                d.inst_type.b.target.branch.cond = (((1 << 4) - 1) & (instr_copy >> (25)));;;
+
+
                 d.inst_type.b.target.branch.disp22 = (((1 << 22) - 1) & (instr_copy >> (0)));
             }
 
@@ -393,7 +436,7 @@ void decode(uint32_t instr){
             break;
 
         default:
-        	cerr << "OPCODE length changed (not 2-bits anymore)?" << endl;
+        	//cerr << "OPCODE length changed (not 2-bits anymore)?" << endl;
             break;
     }
 
@@ -402,10 +445,9 @@ void decode(uint32_t instr){
 }
 
 
-
 int main() {
 
-    uint32_t instructions[] = {0x40025642};
+    uint32_t instructions[] = {0x40025642, 0x1110036f};
 
     for(int i = 0; i < NUM_INSTRUCTIONS; i++) {
     	printf("%08jx ", (uintmax_t)instructions[i]);
@@ -451,7 +493,9 @@ int main() {
 					cout << binToHex(arr,0,8) << " " << binToHex(arr,8,16) << " " << binToHex(arr,16,24) << " " << binToHex(arr,24,32) << "\t" ;
 					printf("sethi %chi(%s), %s%d\n",'%',value.c_str(),reg.c_str(),(temp%8));
 					printf(">>>>>---------------------------------------------<<<<<\n");
-					break;
+			error: a function-definition is not allowed here before ‘{’ token
+ int main() {error: a function-definition is not allowed here before ‘{’ token
+ int main() {		break;
 
 				case 5:
 					printf("ERROR!!! Unidentified Argument while reading OPCODE2 with case 5\n");
