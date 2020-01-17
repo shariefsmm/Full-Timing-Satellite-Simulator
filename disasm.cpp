@@ -56,33 +56,7 @@ string binToHex(int bin[], int s, int e){
 	return result;
 }*/
 /*
-void FBfcccond(int arr[]){
-	int cond;
-	string FBfc[] = {
-        "FBN", 
-        "FBNE", 
-        "FBLG", 
-        "FBUL", 
-        "FBL", 
-        "FBUG", 
-        "FBG", 
-        "FBU", 
-        "FBA", 
-        "FBE", 
-        "FBUG", 
-        "FBGE", 
-        "FBGUE", 
-        "FBLE", 
-        "FBULE", 
-        "FBO"
-    };
-
-/*	//string 
-	cond = (arr[3] * 8) + (arr[4]*4) + (arr[5]*2) + (arr[6]);
-	cout << binToHex(arr,0,8) << " " << binToHex(arr,8,16) << " " << binToHex(arr,16,24) << " " << binToHex(arr,24,32) << "\t" ;
-	cout << FBfc[cond] << " " << "Address_to_jump " << "address+offset" << "\n";
-/
-}*/
+*/
 
 
 /*int disp30(int arr[]){
@@ -277,11 +251,199 @@ void Bicccond(inst x_inst){
 	cond = x_inst.inst_type.b.target.branch.cond;
 	temp  = x_inst.inst_type.b.target.branch.a << 2;
 	temp2 = x_inst.inst_type.b.target.branch.disp22 << 2;
-	printf(" %s \"PC + %08jx\" \n",Bicc[cond].c_str(), (uintmax_t)temp2);  
+	printf(" %s \"PC + %08jx\" \n",Bicc[cond].c_str(), (uintmax_t)temp2);
+	return;  
 }
 
+void FBfcccond(inst x_inst){
+	uint32_t cond;
+	uint32_t temp;
+	uint32_t temp2;
+	string FBfc[] = {
+        "FBN", 
+        "FBNE", 
+        "FBLG", 
+        "FBUL", 
+        "FBL", 
+        "FBUG", 
+        "FBG", 
+        "FBU", 
+        "FBA", 
+        "FBE", 
+        "FBUG", 
+        "FBGE", 
+        "FBGUE", 
+        "FBLE", 
+        "FBULE", 
+        "FBO"
+    };
 
+/*	//string 
+	cond = (arr[3] * 8) + (arr[4]*4) + (arr[5]*2) + (arr[6]);
+	cout << binToHex(arr,0,8) << " " << binToHex(arr,8,16) << " " << binToHex(arr,16,24) << " " << binToHex(arr,24,32) << "\t" ;
+	cout << FBfc[cond] << " " << "Address_to_jump " << "address+offset" << "\n";
+*/
+  	cond = x_inst.inst_type.b.target.branch.cond;
+	temp  = x_inst.inst_type.b.target.branch.a << 2;
+	temp2 = x_inst.inst_type.b.target.branch.disp22 << 2;
+	printf(" %s \"PC + %08jx\" \n",FBfc[cond].c_str(), (uintmax_t)temp2);  
+	return;
+}
 
+void CBccccond(inst x_inst){
+	uint32_t cond;
+	uint32_t temp;
+	uint32_t temp2;
+	string cbc[] = {
+        "CBN", 
+        "CB123", 
+        "CB12", 
+        "CB13", 
+        "CB1", 
+        "CB23", 
+        "CB2", 
+        "CB3", 
+        "CBA", 
+        "CB0", 
+        "CB03", 
+        "CB02", 
+        "CB023", 
+        "CB01", 
+        "CB013", 
+        "CB012"
+    };
+
+/*	//string 
+	cond = (arr[3] * 8) + (arr[4]*4) + (arr[5]*2) + (arr[6]);
+	cout << binToHex(arr,0,8) << " " << binToHex(arr,8,16) << " " << binToHex(arr,16,24) << " " << binToHex(arr,24,32) << "\t" ;
+	cout << FBfc[cond] << " " << "Address_to_jump " << "address+offset" << "\n";
+*/
+  	cond = x_inst.inst_type.b.target.branch.cond;
+	temp  = x_inst.inst_type.b.target.branch.a << 2;
+	temp2 = x_inst.inst_type.b.target.branch.disp22 << 2;
+	printf(" %s \"PC + %08jx\" \n",cbc[cond].c_str(), (uintmax_t)temp2);  
+	return;
+}
+
+void op3two(inst x_inst){
+	uint32_t op3; 
+	uint32_t rd;
+	uint32_t rs1;
+	uint32_t rs2;
+	int i;
+	int k,l;
+	uint32_t opf;
+	uint32_t simm13;
+	uint32_t op354;
+	uint32_t op024;
+	string RegRd;
+	string RegRs1;
+	string RegRs2;
+	string cbc[][4] = {
+						{"ADD"  ,"ADDcc"  ,"TADDcc"    ,"WRASR | WRY"},
+					  	{"AND"  ,"ANDcc"  ,"TSUBCC"    ,"WRPSR"},
+			 			{"OR"   ,"ORcc"   ,"TADDccTV"  ,"WRWIM"},
+		        		{"XOR"  ,"XORcc"  ,"TSUBccTV"  ,"WRTBR"},
+		        		{"SUB"  ,"SUBCC"  ,"MULScc"    ,"//FPop1"},
+		        		{"ANDN" ,"ANDNcc" ,"SLL"       ,"//FPop2"},
+		        		{"ORN"  ,"ORNcc"  ,"SRL"       ," CPop1"},
+		        		{"XNOR" ,"XNORcc" ,"SRA"       ,"CPop2"},
+		        		{"ADDX" ,"ADDXcc" ,"RDASR|RDY  |STBAR", "JMPL"}, 
+		        		{"NULL" ,"NULL"   ,"RDPSR" ,"RETT"},
+		        		{"UMUL" ,"UMULcc" ,"RDWIM" ,"Ticc"},
+		        		{"SMUL" ,"SMULcc" ,"RDTBR" ,"FLUSH"},
+		        		{"SUBX" ,"SUBXcc" ,"NULL"  ,"SAVE"},
+		        		{"NULL" ,"NULL"   , "NULL" ,"RESTORE"},
+		        		{"UDIV" ,"UDIVcc" ,"NULL"  ,"NULL"},
+				        {"SDIV" ,"SDIVcc" ,"NULL"  ,"NULL"}
+    };
+    rd = x_inst.inst_type.c.rd;
+    rs1= x_inst.inst_type.c.rs1;
+    op3= x_inst.inst_type.c.op3;
+
+    if(op3==0x34){
+    	string fpop[] = {
+    		"01 FMOVs"
+			"05 FNEGs"
+			"09 FABSs"
+			"29 FSQRTs"
+			"2A FSQRTd"
+			"2B FSQRTq"
+			"41 FADDs"
+			"42 FADDd"
+			"43 FADDq"
+			"45 FSUBs"
+			"46 FSUBd"
+			"47 FSUBq"
+			"49 FMULs"
+			"4A FMULd"
+			"4B FMULq"
+			"4D FDIVs"
+			"4E FDIVd"
+			"4F FDIVq"
+			"69 FsMULd"
+			"6E FdMULq"
+			"C4 FiTOs"
+			"C6 FdTOs"
+			"C7 FqTOs"
+			"C8 FiTOd"
+			"C9 FsTOd"
+			"CB FqTOd"
+			"CC FiTOq"
+			"CD FsTOq"
+			"CE FdTOq"
+			"D1 FsTOi"
+			"D2 FdTOi"
+			"D3 FqTOi"
+    	};
+
+    	printf("%s %s%d %d %s%d \n",cbc[l][k],RegRd.c_str(),(rd%8), simm13 ,RegRs1.c_str(),(rs1%8));
+    	return;
+
+    }
+    else if(op3==0x35){
+    	string fpop2[]{
+    		"51 FCMPs"
+			"52 FCMPd"
+			"53 FCMPq"
+			"55 FCMPEs"
+			"56 FCMPEd"
+			"57 FCMPEq"
+    	};
+
+    	return;
+
+    }
+
+    op354 = x_inst.inst_type.c.op3 >> 4;
+    op024 = (((1 << 5) - 1) & (op3));
+
+  	k = op354;
+  	l = op024;
+
+  	if(rd < 8) RegRd = "%g";
+	else if(rd <16) RegRd= "%o";
+	else if(rd <24) RegRd= "%l";
+	else if(rd <32) RegRd= "%i";
+
+	if(rs1 < 8) RegRs1 = "%g";
+	else if(rs1 <16) RegRs1= "%o";
+	else if(rs1 <24) RegRs1= "%l";
+	else if(rs1 <32) RegRs1= "%i";
+
+	if(i=0){
+	  	if(rs2 < 8) RegRs2 = "%g";
+		else if(rs2 <16) RegRs2= "%o";
+		else if(rs2 <24) RegRs2= "%l";
+		else if(rs2 <32) RegRs2= "%i";
+
+		printf("%s %s%d %s%d %s%d \n",cbc[l][k],RegRd.c_str(),(rd%8),RegRs2.c_str(),(rs2%8),RegRs1.c_str(),(rs1%8));
+	}
+	else if(i=1){
+		printf("%s %s%d %d %s%d \n",cbc[l][k],RegRd.c_str(),(rd%8), simm13 ,RegRs1.c_str(),(rs1%8));
+	}
+    return;
+}
 
 void disassemble(inst x_inst) {
 	uint32_t r;		// random which will be used to store some imp values
@@ -310,6 +472,7 @@ void disassemble(inst x_inst) {
 				r = x_inst.inst_type.b.target.branch.disp22 << 2;
 				temp2 = x_inst.inst_type.b.target.branch.cond;
 				temp  = x_inst.inst_type.b.target.branch.a << 2;
+				Bicccond(x_inst);
 			}
 
 			else if (eop == 4)
@@ -324,7 +487,7 @@ void disassemble(inst x_inst) {
 			}
 
 			else if(eop == 6){
-
+				FBfcccond(x_inst);
 			}
 
 			else if(eop == 7){
@@ -334,8 +497,14 @@ void disassemble(inst x_inst) {
 			break;
 
 		case 2:
+			eop = x_inst.inst_type.c.op3 >> 4; //getting op3[5:4]
+			op3two(x_inst);
+			break;
+
+
 		case 3:
-			printf("we are in opcode 2 or 3\n");
+			//printf("we are in opcode 2 or 3\n");
+			
 			break;
 
 
